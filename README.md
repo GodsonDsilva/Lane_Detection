@@ -7,13 +7,17 @@ Approach 1 :
 
 Running the model :
 ```
-jupyter nbconvert --execute run-hough-transform-lane-detection.ipynb
+cd Approach-1
+
+jupyter nbconvert --execute run.ipynb
 ```
 
 Approach 2 : 
 
 Training the model :
 ```
+cd Approach-2
+
 python model.py
 ```
 
