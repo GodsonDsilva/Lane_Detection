@@ -1,13 +1,3 @@
-""" This file contains code for a fully convolutional
-(i.e. contains zero fully connected layers) neural network
-for detecting lanes. This version assumes the inputs
-to be road images in the shape of 80 x 160 x 3 (RGB) with
-the labels as 80 x 160 x 1 (just the G channel with a
-re-drawn lane). Note that in order to view a returned image,
-the predictions is later stacked with zero'ed R and B layers
-and added back to the initial road image.
-"""
-
 import numpy as np
 import pickle
 from sklearn.utils import shuffle
@@ -35,21 +25,19 @@ labels = labels / 255
 
 # Shuffle images along with their labels, then split into training/validation sets
 train_images, labels = shuffle(train_images, labels)
-# Test size may be 10% or 20%
+
 X_train, X_val, y_train, y_val = train_test_split(train_images, labels, test_size=0.1)
 
 # Batch size, epochs and pool size below are all paramaters to fiddle with for optimization
 batch_size = 150
-epochs = 2
+epochs = 20
 pool_size = (2, 2)
 input_shape = X_train.shape[1:]
 
-### Here is the actual neural network ###
 model = Sequential()
 # Normalizes incoming inputs. First layer needs the input shape to work
 model.add(BatchNormalization(input_shape=input_shape))
 
-# Below layers were re-named for easier reading of model summary; this not necessary
 # Conv Layer 1
 model.add(Convolution2D(60, 3, 3, border_mode='valid', subsample=(1,1), activation = 'relu', name = 'Conv1'))
 
@@ -127,12 +115,7 @@ model.add(Deconvolution2D(60, 3, 3, border_mode='valid', subsample=(1,1), activa
 model.add(Deconvolution2D(1, 3, 3, border_mode='valid', subsample=(1,1), activation = 'relu', 
                           output_shape = model.layers[0].output_shape, name = 'Final'))
 
-### End of network ###
 
-
-# Using a generator to help the model use less data
-# I found NOT using any image augmentation here surprisingly yielded slightly better results
-# Channel shifts help with shadows but overall detection is worse
 datagen = ImageDataGenerator()
 datagen.fit(X_train)
 
